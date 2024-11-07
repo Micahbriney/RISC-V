@@ -1,0 +1,71 @@
+#########################################################
+#Programming Assignment Lab 4
+#Uses stacks to save data
+#Employs use of double dabble algorithm to shift binary
+#left and procedurally generate BCD starting with one's
+#column
+#########################################################
+.data
+	masks:	.word	0x3C000, 0x3C0000, 0x3C00000
+	adds:	.word	0xC000,0xC0000,0xC00000
+.text
+Binary_to_BCD:
+Store:	addi	sp, sp, -20
+		lw		x10, 0(sp)
+		lw		x12, 4(sp)		    #compare value
+		lw		x13, 8(sp)		    #tempory number checker
+		lw		x14, 12(sp)		    #counter
+		lw		x15, 16(sp)
+		lw		x16, 20(sp)
+
+init:	la		x15, masks
+		la		x16, adds			
+		li		x10, 0x270F         #Add test value
+        mv		x12, x0				#clear compare value
+		addi	x12, x12, 0x5		#set compare value
+		mv		x14, x0				#clear counter
+		addi	x14, x14, 14		#set counter
+
+Main:	slli	x10, x10, 1			#Begins shifting binary into BCD columns
+		addi	x14, x14, -1		#Counter decrements
+		beq		x14, x0, restore	#If counter is 0 finish program
+	
+Chk_1:	lw		x13, 0(x15)			#load new and value
+		and		x13, x10, x13 		#mask the 1s place
+		srli	x13, x13, 14		#shifts bits to right for comparison to 5
+        bgeu	x13, x12, fix_1		#check if greater than 5
+	
+Chk_10: lw		x13, 4(x15)			#load new and value
+		and		x13, x10, x13		#mask the 10s place
+		srli	x13, x13, 18		#shifts bits to right for comparison to 5
+        bgeu	x13, x12, fix_10	#check if greater than 5
+	
+Chk_100:lw		x13, 8(x15)			#load new and value
+		and		x13, x10, x13		#mask the 10s place
+		srli	x13, x13, 22		#shifts bits to right for comparison to 5
+        bgeu	x13, x12, fix_100	#check if greater than 5
+        J 		Main
+
+fix_1:	lw		x13, 0(x16)			#load new add value
+		add		x10, x10, x13		#add 3
+		J		Chk_10
+
+fix_10:	lw		x13, 4(x16)			#load new add value
+		add		x10, x10, x13		#add 3
+		J		Chk_100
+
+fix_100:lw		x13, 8(x16)			#load new add value
+		add		x10, x10, x13		#add 3
+		J		Main
+
+restore:srli	x10, x10, 14		#shifts the BCD number to LSB
+		mv		x11, x10			#load BCD to register 11
+		sw		x16, 20(sp)
+		sw		x15, 16(sp)
+		sw		x14, 12(sp)
+		sw		x13, 8(sp)
+		sw		x12, 4(sp)
+		sw		x10, 0(sp)
+        addi	sp, sp, -20
+
+done:	ret

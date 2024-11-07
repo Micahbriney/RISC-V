@@ -1,0 +1,14 @@
+.text 
+init: 	
+	li 	x11, 0xC0000012 		#initialize input port 
+	li 	x12, 0xC0000033 		#initialize output port
+	mv	x10, x0				#initialize sum register
+
+	lw	x13, 0(x11)			#get input data
+
+main: 
+	add 	x10, x13, x13			#multiplies x13 by 2
+	add  x10, x10, x13 			#adds x13 one more time 
+
+	sw   x10, 0(x12)			#outputs final val
+	ret

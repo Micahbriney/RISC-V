@@ -1,0 +1,23 @@
+#--------------------------------------------------------------------------------------------
+#-
+#- This program will find the product of n groups of the 32 bit input value stored in x20.
+#- This will require an iterative while loop.
+#- To multiply by 3 the iteration variable will be loaded like: x15 = 3 - 1 = 2.
+#- This program can be used to multiply any 32 bit value any number of times by using the 
+#- initial iterative value x15 = n - 1 where n is the number of groups (factor) of 32 bits.
+#- 
+#--------------------------------------------------------------------------------------------
+
+init:		li		x20,0xC0000012		#Initialize accumulator reg with input value 0xC000_0012
+		addi		x21,x20,0		#Store original input value. Pseudoinst: mv	x21,x20
+		li		x10,0xC0000033		#Store output port with 0xC000_0033
+		li		x15,2			#Initialize iteration reg with n-1 value
+				
+loop:		beq		x15,x0,loop_done	#While loop checks iteration value first
+		add		x20,x20,x21		#Add input to value stored in Accumulator
+		addi		x15,x15,-1		#Decrement the iteration value by -1
+		j		loop			#Start loop over
+
+loop_done:	ret
+
+

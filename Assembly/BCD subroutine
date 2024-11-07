@@ -1,0 +1,69 @@
+#--------------------------------------------------------------------------------------------------
+#
+# 
+#--------------------------------------------------------------------------------------------------
+.data
+maskvalue:	.word	0x0000000F, 0x000000F0, 0x00000F00, 0x0000F000
+bcdvalue:	.word	0x0000270F										#This should be 9999 in bcd
+
+.text
+bcd_sub:
+
+store:			addi	sp,	 sp,  -28				#stack pointer offset
+				sw		x10, 0(sp)					#Data from memory
+				sw		x12, 4(sp)					#1000's counter
+				sw		x13, 8(sp)					#100's counter
+				sw		x14, 12(sp)					#10's counter
+				sw		x15, 16(sp)					#1's counter
+				sw		x16, 20(sp)					#Overflow sentinel
+				sw		x17, 24(sp)					#Mask 
+							
+init:			la		x17, maskvalue				#Mask register
+				la		x18, bcdvalue				#Test value in hex
+				li		x19, 4						#mask_values loop counter
+				lw		x11, x18, 					#Zero accumulator
+				lw		x12, 0(x18)					#Zero 1000's counter
+				lw		x13, 4()					#Zero 100's counter
+				lw		x14, 8(sp)					#Zero 10's counter
+				lw		x15, 12(sp)					#Zero 1's counter
+				lw		x16, 16(sp)					#Zero sentinel			
+				and		x12, x0						#Zero 1000's counter
+				and		x13, x0						#Zero 100's counter
+				and		x14, x0						#Zero 10's counter
+				and		x15, x0						#Zero 1's counter
+				and		x16, x0						#Zero sentinel
+
+mask_values:	beq		x19, x0, loop_1k
+				lw		x
+				
+				
+			
+loop_1k:		beq		x12, x0,  loop_100			#Check if masked x12 is zero
+				addi	x11, x11, 1000				#Incrememt accumulator by 1000
+				addi	x12, x12, -1000				#Decrement masked register by 1000
+				j		loop_1k						#repeat loop_1k
+				
+loop_100:		beq		x13, x0,  loop_10			#Check if masked x13 is zero
+				addi	x11, x11, 100				#Incrememt accumulator by 100
+				addi	x13, x13, -100				#Decrement masked register by 100
+				j		loop_100					#repeat loop_100
+		
+loop_10:		beq		x14, x0,  loop_100			#Check if masked x14 is zero
+				addi	x11, x11, 10				#Incrememt accumulator by 10
+				addi	x14, x14, -10				#Decrement masked register by 10
+				j		loop_10						#repeat loop_10
+								
+loop_1:			beq		x15, x0,  restore			#Check if masked x15 is zero
+				addi	x11, x11, 1					#Incrememt accumulator by 1
+				addi	x15, x15, -1				#Decrement masked register by 1
+				j		loop_1						#repeat loop_1
+		
+restore:		sw		x10, 0(sp)					#pop x10 off stack
+				sw		x12, 4(sp)					#pop x12 off stack
+				sw		x13, 8(sp)					#pop x13 off stack
+				sw		x14, 12(sp)					#pop x14 off stack
+				sw		x15, 16(sp)					#pop x15 off stack
+				sw		x16, 20(sp)					#pop x16 off stack
+				addi	sp,  sp, 24					#advance stack point
+		
+done:			ret									#return to subroutine call			

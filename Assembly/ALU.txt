@@ -1,0 +1,40 @@
+
+
+module ALU(
+    input [31:0] op_1,
+    input [31:0] op_2,
+    input [31:0] alu_fun,
+    output [7:0] result
+    );
+
+	always @(*)
+	begin 
+		case (SEL) 
+		0101:		result = 		  op_1  >>  	   	 op_2;	//srl  - Shifts op_1 right by the number specified in op_2 (up to 5 LSB's). Inserts 0's.
+		0001:		result = 		  op_1  <<  	   	 op_2;	//sll  - Shifts op_1 left by the number specified in op_2 (up to 5 LSB's). Inserts 0's.
+		0110:		result = 		  op_1  |   	   	 op_2;	//or   - Bit-wise OR compares each bit in op_1 to each corresponding bit in op_2.
+		0111:		result = 		  op_1  &   	   	 op_2;	//and  - Bit-wise AND compares each bit in op_1 to each corresponding bit in op_2.
+		0100:		result = 		  op_1  ^   	   	 op_2;	//xor  - Bit-wise XOR compares each bit in op_1 to each corresponding bit in op_2.
+		1001:		result =    [19:0]op_1  << 		   	   12;	//lui  - 20 bits from op_1 is loaded into the upper 20 bits of result. Lower 12 bits are zeros.
+		0011:		if (			  op_1  <   	   	 op_2)	//sltu - Result is 1 if op_1 < op_2. Else result is 0. Performes unsigned comparison.
+					begin
+						result = 1;
+					end
+					else
+					begin
+						result = 0;
+					end
+		0000:		result = $signed (op_1) +   $signed (op_2);	//add  - Adds op_1 and op_2. Both are cast as signed values.
+		1000:		result = $signed (op_1) -   $signed (op_2);	//sub  - Subtracts op_1 from op_2. Both are cast as signed values.
+		1101:		result = $signed (op_1) >>> $signed (op_2);	//sra  - Shifts op_1 right by the number specified in op_2 (up to 5 LSB's). Sign extends MSB. 
+		0010:		if (	 $signed (op_1) < 	$signed (op_2))	//slt  - Result is 1 if op_1 < op_2. Else result is 0. Performs signed comparison.
+					begin
+						result = 1;
+					end
+					else
+					begin
+						result = 0;
+					end 
+		default D_OUT = 0;
+	endcase 
+	end

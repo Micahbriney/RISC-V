@@ -1,0 +1,14 @@
+#--------------------------------------------------------------------
+# Program: Program Counter
+#  
+#--------------------------------------------------------------------
+
+.text
+init: 	li t0,4			# initialize register
+	li t1,8			#
+	li t2,12		#
+main: 	add t3,t2,t1	# do something meaningful
+	sub t2,t2,t0	#
+	sra t0,t2,t1	#
+j 	main			# repeat doing meaningful things
+

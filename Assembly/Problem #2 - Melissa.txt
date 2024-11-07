@@ -1,0 +1,13 @@
+.text 
+init: 	
+	li 	 x11, 0xC0000012 		# initialize input port 
+	li 	 x12, 0xC00000AA 		# initialize output port
+	li       x10, 0x047			# initialize value 
+	lw 	 x13, 0(x11) 		     # gets input data
+
+main: 
+	xori  x13, x13, 1	 		# toggles bits 
+	addi  x13, x13, 1 			# adds 1
+	add   x10, x10, x10			# adds value  
+	sw 	 x10, 0(x12)	 		# outputs final value 
+	ret

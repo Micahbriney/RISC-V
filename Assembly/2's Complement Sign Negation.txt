@@ -1,0 +1,19 @@
+#--------------------------------------------------------------------------------------------
+#-
+#- Reads data from the input port addressed by 0xC000_0012, signed binary
+#- negates the value,
+#- adds 0x047 to the value,
+#- then outputs the value to the output port addressed by 0xC000_00AA.
+#- For this program, assume the data read from the input port is in 2’s complement format.
+#- 
+#- 
+#--------------------------------------------------------------------------------------------
+
+init:		li		x20,0xC0000012		#Initialize the input register with 0xC0000012
+		li		x10,0xC00000AA		#Initialize the output register with 0xC00000AA
+			
+main:		sub		x20,x0,x20		#2's complement, x20 = x0 - x20. Pseudoinst: neg x20,x20
+		addi		x20,x20,0x047		#Add the hex value 0x047 to reg x20
+		mv		x10,x20			#Pseudoinst to copy x20 to x10
+
+done:		ret

@@ -1,0 +1,30 @@
+#--------------------------------------------------------------------------------------------------
+#
+# There is no stack used in this sub routine
+# Test data us provided
+# x30 will add up to 0x00020000 then divide twice.
+# First divide will make x30 0x00010000, second divide will be 0x00008000
+#--------------------------------------------------------------------------------------------------
+.data
+tenvalues:	.word	65535,7281,7282,7281,7282,7281,7282,7281,7282,7285
+
+.text
+add_div_sub:							#No Stack needed
+
+init:		la		x5,  tenvalues		#Point x5 at input port
+            li		x6,  10				#Initialize sum counter
+			li		x7,  0x00010000		#Sixteen bit compare register
+			mv		x30, x0				#Clear Accumulator
+								
+sum:		beq		x6,  x0,	divide	#Check counter
+			lw		x10, 0(x5)			#load values in x10
+			add		x30, x30,	x10		#Sum value in x10
+			addi	x5,  x5,	4		#Advance address by 4 bytes
+			addi	x6,  x6,	-1		#Decrement sum counter
+			j		sum					#Jump to sum loop
+
+divide:		bltu	x30, x7,	done	#Check to see if accumulator is 16bits long
+			srli	x30, x30,	1		#Divide by 2
+			j		divide				#Jump to divide
+
+done:		ret
